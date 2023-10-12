@@ -1,0 +1,73 @@
+# SIGN UP REQUEST
+POST http://localhost:3000/register
+Content-Type: application/json
+
+{
+    "name":"Syam",
+    "email":"syam@fs.com",
+    "password":"Lucky"
+}
+
+
+# LOGIN IN REQUEST
+###
+POST http://localhost:3000/login
+Content-Type: application/json
+
+{
+    "email":"syam@fs.com",
+    "password":"Lucky"
+}
+
+
+# HOME REQUEST WITH OUT ACCESS TOKEN
+###
+GET http://localhost:3000
+
+
+# HOME REQUEST WITH ACCESS TOKEN
+###
+GET http://localhost:3000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InN5YW1AZnMuY29tIiwiaWF0IjoxNjk3MDk1NjgxfQ._VHFvTd4IY0NYRKjhB7kYtz3H-vnHSSbdR7M0GeMwt8
+
+
+# ADD PRODUCT REQUEST
+###
+POST http://localhost:3000/add-product
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InN5YW1AZnMuY29tIiwiaWF0IjoxNjk3MDk1NjgxfQ._VHFvTd4IY0NYRKjhB7kYtz3H-vnHSSbdR7M0GeMwt8
+Content-Type: application/json
+
+{
+    "name":"I Phone 14",
+    "price": 59999
+}
+
+
+# GET PRODUCTS REQUEST
+###
+GET http://localhost:3000/products
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InN5YW1AZnMuY29tIiwiaWF0IjoxNjk3MDk1NjgxfQ._VHFvTd4IY0NYRKjhB7kYtz3H-vnHSSbdR7M0GeMwt8
+
+
+# GET PRODUCT BY ID
+###
+GET http://localhost:3000/product/6527b42879aef6937ecba63d
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InN5YW1AZnMuY29tIiwiaWF0IjoxNjk3MDk1NjgxfQ._VHFvTd4IY0NYRKjhB7kYtz3H-vnHSSbdR7M0GeMwt8
+
+
+# UPDATE PRODUCT BY ID
+###
+PUT  http://localhost:3000/update-product/6527b42879aef6937ecba63d
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InN5YW1AZnMuY29tIiwiaWF0IjoxNjk3MDk1NjgxfQ._VHFvTd4IY0NYRKjhB7kYtz3H-vnHSSbdR7M0GeMwt8
+Content-Type: application/json
+
+{
+    "name":"I Phone 13",
+    "price": 49999
+}
+
+
+# DELETE PRODUCT BY ID
+###
+DELETE http://localhost:3000/delete-product/6527b42879aef6937ecba63d
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InN5YW1AZnMuY29tIiwiaWF0IjoxNjk3MDk1NjgxfQ._VHFvTd4IY0NYRKjhB7kYtz3H-vnHSSbdR7M0GeMwt8

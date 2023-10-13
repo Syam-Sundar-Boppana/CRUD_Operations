@@ -94,7 +94,7 @@ app.post('/login', async(req, res) => {
                 const isPasswordValid = await bcrypt.compare(password,dbuserData.password);
                 if(isPasswordValid){
                     jwt.sign({email:email},"LOGIN_WITH_EMAIL");
-                    res.send("Login Sucess");
+                    res.send(`Welcome ${dbuserData.name}, Have a Good Day 😃`);
                 }else{
                     res.send("Incorrect password");
                 }

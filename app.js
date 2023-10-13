@@ -31,37 +31,78 @@ const authToken = (req,res, next) =>{
     }
 }
 
+const passwordValidator = (password) =>{
+    let value;
+    let message = "";
+    if(password.length < 8) { 
+        message = "Password must be at least 8 characters";
+        value = false;
+    } else if(password.search(/[a-z]/) < 0) { 
+        message = "Password must contain at least one lowercase letter";
+        value = false;
+    } else if(password.search(/[A-Z]/) < 0) { 
+        message = "Password must contain at least one uppercase letter";
+        value = false; 
+    } else if(password.search(/[0-9]/) < 0) { 
+        message = "Password must contain at least one number";
+        value = false;
+    } else { 
+        message = "Success!";
+        value = true
+    }
+    return [message, value];
+}
+
 app.post('/register', async (req, res) =>{
     const {name, email, password} = req.body;
-    if (!name || !email || !password){
-        res.send("Name Email Password are required to register");
-    }else{
-        const dbuserData = await registerSchema.findOne({email:email});
-        if(dbuserData){
-            res.send("User Already Exists");
+    const validatedPassword = passwordValidator(password);
+    const [message, value] = validatedPassword;
+    if (email.includes("@")){
+        if (!name || !email || !password){
+            res.send("Name, Email & Password are required to register");
         }else{
-            const hashedPassword = await bcrypt.hash(password,10);
-            const data = {name:name, email:email, password:hashedPassword};
-            await registerSchema.create(data);
-            res.send("User Created Successfully");
+            const dbuserData = await registerSchema.findOne({email:email});
+            if(dbuserData){
+                res.send("User Already Exists");
+            }else{
+                if (value){
+                    const hashedPassword = await bcrypt.hash(password,10);
+                    const data = {name:name, email:email, password:hashedPassword};
+                    await registerSchema.create(data);
+                    res.send("User Created Succesfully");
+                }else{
+                    res.send(message);
+                }                
+            } 
         }
-        
+    }else{
+        res.send("Invalid Email");
     }
 });
 
 app.post('/login', async(req, res) => {
     const {email, password} = req.body;
-    const dbuserData = await registerSchema.findOne({email:email});
-    if(dbuserData === undefined){
-        res.send("Invalid User");
-    }else{
-        const isPasswordValid = await bcrypt.compare(password,dbuserData.password);
-        if(isPasswordValid){
-            jwt.sign({email:email},"LOGIN_WITH_EMAIL");
-            res.send("Login Sucessful");
+    const validatedPassword = passwordValidator(password);
+    const [message, value] = validatedPassword;
+    if (email.includes("@")){
+        const dbuserData = await registerSchema.findOne({email:email});
+        if(dbuserData === undefined){
+            res.send("Invalid User");
         }else{
-            res.send('Invalid Password');
+            const isPasswordValid = await bcrypt.compare(password,dbuserData.password);
+            if(isPasswordValid){
+                if (value){
+                    jwt.sign({email:email},"LOGIN_WITH_EMAIL");
+                    res.send("Login Sucessful");
+                }else{
+                    res.send(message);
+                }
+            }else{
+                res.send('Invalid Password');
+            }
         }
+    }else{
+        res.send("Invalid Email");
     }
 });
 

@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt')
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
+const emailValidator = require('email-validator');
 const registerSchema = require('./models/register');
 const productsSchema = require('./models/products');
 
@@ -50,59 +51,59 @@ const passwordValidator = (password) =>{
         message = "Success!";
         value = true
     }
-    return [message, value];
+    return {message:message, value:value};
 }
 
 app.post('/register', async (req, res) =>{
     const {name, email, password} = req.body;
     const validatedPassword = passwordValidator(password);
-    const [message, value] = validatedPassword;
-    if (email.includes("@")){
-        if (!name || !email || !password){
-            res.send("Name, Email & Password are required to register");
-        }else{
+    const validatedEmail = emailValidator.validate(email);
+    if(!name || !email || !password){
+        res.send("Name, Email & Password are required to register");
+    }else{
+        if(validatedEmail){
             const dbuserData = await registerSchema.findOne({email:email});
             if(dbuserData){
                 res.send("User Already Exists");
             }else{
-                if (value){
+                if(validatedPassword.value){
                     const hashedPassword = await bcrypt.hash(password,10);
                     const data = {name:name, email:email, password:hashedPassword};
                     await registerSchema.create(data);
                     res.send("User Created Succesfully");
                 }else{
-                    res.send(message);
+                    res.send(validatedPassword.message);
                 }                
             } 
+        }else{
+            res.send("Invalid Email");
         }
-    }else{
-        res.send("Invalid Email");
     }
 });
 
 app.post('/login', async(req, res) => {
     const {email, password} = req.body;
     const validatedPassword = passwordValidator(password);
-    const [message, value] = validatedPassword;
-    if (email.includes("@")){
+    const validatedEmail = emailValidator.validate(email);
+    if (validatedEmail){
         const dbuserData = await registerSchema.findOne({email:email});
         if(dbuserData === undefined){
             res.send("Invalid User");
         }else{
-            const isPasswordValid = await bcrypt.compare(password,dbuserData.password);
-            if(isPasswordValid){
-                if (value){
+            if(validatedPassword.value){
+                const isPasswordValid = await bcrypt.compare(password,dbuserData.password);
+                if(isPasswordValid){
                     jwt.sign({email:email},"LOGIN_WITH_EMAIL");
-                    res.send("Login Sucessful");
+                    res.send("Login Sucess");
                 }else{
-                    res.send(message);
+                    res.send("Incorrect password");
                 }
             }else{
-                res.send('Invalid Password');
+                res.send(validatedPassword.message);
             }
         }
     }else{
-        res.send("Invalid Email");
+        res.send('Invalid Email');
     }
 });
 
